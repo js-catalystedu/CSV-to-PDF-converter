@@ -1,0 +1,4 @@
+pandas
+reportlab
+tkinterdnd2
+pyinstaller
