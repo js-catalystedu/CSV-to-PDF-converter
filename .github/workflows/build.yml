@@ -31,7 +31,8 @@ jobs:
       run: |
         python -m PyInstaller --onefile --windowed --icon="icon.ico" --add-data="icon.ico;." converter.py
 
-    - name: Build for macOS
+    # --- macOS Build Steps ---
+    - name: Build macOS App
       if: matrix.os == 'macos-latest'
       run: |
         # Use the built-in macOS tools to create the .icns file
@@ -41,24 +42,24 @@ jobs:
         
         # Build the application
         python3 -m PyInstaller --windowed --icon="icon.icns" --add-data="icon.icns:." converter.py
-        
-        # --- NEW STEPS TO CREATE DMG ---
-        # Install the DMG creation tool
-        - name: Install create-dmg
-          run: brew install create-dmg
 
-        # Create a distributable DMG file
-        - name: Create DMG
-          run: |
-            create-dmg \
-              --volname "CSV to PDF Converter" \
-              --window-pos 200 120 \
-              --window-size 600 400 \
-              --icon-size 100 \
-              --app-drop-link 450 185 \
-              "dist/CSV-to-PDF-Converter.dmg" \
-              "dist/converter.app"
+    - name: Install create-dmg (macOS)
+      if: matrix.os == 'macos-latest'
+      run: brew install create-dmg
 
+    - name: Create DMG (macOS)
+      if: matrix.os == 'macos-latest'
+      run: |
+        create-dmg \
+          --volname "CSV to PDF Converter" \
+          --window-pos 200 120 \
+          --window-size 600 400 \
+          --icon-size 100 \
+          --app-drop-link 450 185 \
+          "dist/CSV-to-PDF-Converter.dmg" \
+          "dist/converter.app"
+
+    # --- Artifact Upload Steps ---
     - name: Upload Windows Artifact
       if: matrix.os == 'windows-latest'
       uses: actions/upload-artifact@v4
