@@ -34,11 +34,14 @@ jobs:
     - name: Build for macOS
       if: matrix.os == 'macos-latest'
       run: |
-        # Install tool to create .icns file
-        brew install png2icns
-        # Create .icns file from the .png
-        png2icns icon.icns icon.png
-        # Build the application (using directory mode for reliability)
+        # Use the built-in macOS tools to create the .icns file
+        # Create a directory for the icon set
+        mkdir icon.iconset
+        # Use sips to resize the png into the iconset directory
+        sips -z 256 256 icon.png --out icon.iconset/icon_256x256.png
+        # Convert the iconset to an .icns file
+        iconutil -c icns icon.iconset
+        # Build the application
         python3 -m PyInstaller --windowed --icon="icon.icns" --add-data="icon.icns:." converter.py
 
     - name: Upload Artifact
